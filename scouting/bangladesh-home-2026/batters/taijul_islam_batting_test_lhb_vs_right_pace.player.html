@@ -1,0 +1,122 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Islam, Taijul — video</title>
+<style>
+  :root { --accent:#003087; --danger:#b91c1c; --bg:#0f1420; --panel:#1a2130; --text:#e8ecf4; --muted:#9aa6bd; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:Inter,-apple-system,"Segoe UI",sans-serif; background:var(--bg); color:var(--text); }
+  header { padding:16px 22px; border-bottom:1px solid #223; }
+  h1 { margin:0; font-size:20px; } .sub { color:var(--muted); font-size:13px; margin-top:2px; }
+  .tabs { display:flex; flex-wrap:wrap; gap:8px; padding:14px 22px 0; }
+  .tab { background:var(--panel); border:1px solid #2a3446; color:var(--text); border-radius:20px;
+         padding:6px 14px; font-size:13px; cursor:pointer; }
+  .tab.active { background:var(--accent); border-color:var(--accent); font-weight:700; }
+  .tab .n { color:var(--muted); font-size:11px; margin-left:5px; } .tab.active .n { color:#cdd8ff; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:10px; padding:16px 22px 40px; }
+  .card { background:var(--panel); border:1px solid #2a3446; border-radius:10px; padding:11px 13px; cursor:pointer;
+          display:flex; flex-direction:column; gap:6px; transition:border-color .12s; }
+  .card:hover { border-color:var(--accent); }
+  .card .idx { color:var(--muted); font-size:11px; }
+  .card .cap { font-size:13px; line-height:1.35; }
+  .card .play { align-self:flex-start; margin-top:2px; font-size:11px; font-weight:700; color:#fff;
+                background:var(--accent); border-radius:5px; padding:2px 9px; }
+  .empty { color:var(--muted); padding:20px 22px; }
+  /* modal / lightbox — greys out the whole page */
+  .modal { position:fixed; inset:0; display:none; z-index:50; }
+  .modal.open { display:block; }
+  .backdrop { position:absolute; inset:0; background:rgba(0,0,0,.88); }
+  .box { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center;
+         justify-content:center; padding:34px 60px; }
+  .box video { max-width:92vw; max-height:78vh; border-radius:8px; background:#000; box-shadow:0 10px 40px rgba(0,0,0,.6); }
+  .mcap { margin-top:12px; font-size:15px; text-align:center; max-width:80vw; }
+  .mmeta { color:var(--muted); font-size:12px; margin-top:3px; }
+  .angles { margin-top:10px; display:flex; gap:8px; }
+  .angle { background:var(--panel); border:1px solid #2a3446; color:var(--text); border-radius:6px;
+           padding:4px 12px; font-size:12px; cursor:pointer; }
+  .angle.active { background:var(--accent); border-color:var(--accent); font-weight:700; }
+  .nav { position:absolute; top:50%; transform:translateY(-50%); background:rgba(255,255,255,.08);
+         border:none; color:#fff; font-size:34px; width:52px; height:72px; border-radius:8px; cursor:pointer; }
+  .nav:hover { background:rgba(255,255,255,.18); } .nav.prev { left:14px; } .nav.next { right:14px; }
+  .nav[disabled] { opacity:.25; cursor:default; }
+  .close { position:absolute; top:16px; right:20px; background:rgba(255,255,255,.08); border:none; color:#fff;
+           font-size:26px; width:42px; height:42px; border-radius:8px; cursor:pointer; }
+  .counter { position:absolute; top:20px; left:24px; color:var(--muted); font-size:13px; }
+</style></head>
+<body>
+<header><h1>Islam, Taijul</h1><div class="sub">batting scout</div></header>
+<div class="tabs" id="tabs"></div>
+<div class="grid" id="grid"></div>
+
+<div class="modal" id="modal">
+  <div class="backdrop" onclick="closeModal()"></div>
+  <div class="box">
+    <div class="counter" id="counter"></div>
+    <button class="close" onclick="closeModal()" title="Close (Esc)">×</button>
+    <button class="nav prev" id="prev" onclick="step(-1)" title="Previous (←)">‹</button>
+    <button class="nav next" id="next" onclick="step(1)" title="Next (→)">›</button>
+    <video id="vid" controls autoplay playsinline></video>
+    <div class="mcap" id="mcap"></div>
+    <div class="mmeta" id="mmeta"></div>
+    <div class="angles" id="angles"></div>
+  </div>
+</div>
+
+<script>
+const PLAYLISTS = {"danger": {"title": "Danger ball", "items": [{"caption": "Ov 30 · full on the stumps · 129 km/h · v Right Fast · bowled", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2024/Men/Multi%20Day/5460531/B/2/5460531B203004.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}, {"caption": "Ov 41 · full on the stumps · 121 km/h · v Right Medium · lbw", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2024/Men/Multi%20Day/5460482/B/2/5460482B204104.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}, {"caption": "Ov 52 · full on the stumps · 135 km/h · v Right Fast · false shot", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2024/Men/Multi%20Day/5460532/B/1/5460532B105203.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}, {"caption": "Ov 52 · full on the stumps · 135 km/h · v Right Fast · false shot", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2024/Men/Multi%20Day/5460532/B/1/5460532B105205.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}, {"caption": "Ov 82 · full on the stumps · 134 km/h · v Right Fast · false shot", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2024/Men/Multi%20Day/5460531/B/1/5460531B108202.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}, {"caption": "Ov 85 · full on the stumps · 128 km/h · v Right Fast · false shot", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2024/Men/Multi%20Day/5460531/B/1/5460531B108502.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}, {"caption": "Ov 87 · full on the stumps · 133 km/h · v Right Fast · false shot", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2024/Men/Multi%20Day/5460531/B/1/5460531B108705.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}, {"caption": "Ov 36 · full on the stumps · 130 km/h · v Right Fast · false shot", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2024/Men/Multi%20Day/5460499/A/1/5460499A103602.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}]}, "risky_stroke": {"title": "Risky stroke", "items": [{"caption": "Ov 40 · back of a length outside off · v Right Fast · caught", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2025-26/Men/Multi%20Day/5461960/B/2/5461960B204005.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}, {"caption": "Ov 43 · back of a length wide outside off · 130 km/h · v Right Medium · false shot", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2026/Men/Multi%20Day/5461785/A/1/5461785A104304.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}, {"caption": "Ov 79 · back of a length outside off · 124 km/h · v Right Medium · false shot", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2026/Men/Multi%20Day/5461785/A/2/5461785A207903.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}, {"caption": "Ov 85 · back of a length outside off · 114 km/h · v Right Fast · false shot", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2026/Men/Multi%20Day/5461785/A/2/5461785A208506.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}, {"caption": "Ov 87 · back of a length on the stumps · 123 km/h · v Right Fast · false shot", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2026/Men/Multi%20Day/5461785/A/2/5461785A208704.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}, {"caption": "Ov 91 · short outside off · 120 km/h · v Right Fast · false shot", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2026/Men/Multi%20Day/5461785/A/2/5461785A209105.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}, {"caption": "Ov 91 · short outside off · 120 km/h · v Right Fast · false shot", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2026/Men/Multi%20Day/5461785/A/2/5461785A209106.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}, {"caption": "Ov 105 · back of a length in the channel · 125 km/h · v Right Fast · false shot", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2026/Men/Multi%20Day/5461773/A/1/5461773A110502.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}]}, "dismissals": {"title": "Dismissals", "items": [{"caption": "Ov 40 · back of a length outside off · v Right Fast · caught", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2025-26/Men/Multi%20Day/5461960/B/2/5461960B204005.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}, {"caption": "Ov 107 · back of a length outside off · 126 km/h · v Right Fast · caught", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2026/Men/Multi%20Day/5461773/A/1/5461773A110705.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}, {"caption": "Ov 149 · full outside off · 123 km/h · v Right Fast · bowled", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2025/Men/Multi%20Day/5460852/B/1/5460852B114904.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}, {"caption": "Ov 64 · back of a length outside off · 140 km/h · v Right Fast · caught", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2024/Men/Multi%20Day/5460532/B/1/5460532B106403.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}, {"caption": "Ov 50 · back of a length wide outside off · 137 km/h · v Right Fast · caught", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2024/Men/Multi%20Day/5460532/B/2/5460532B205003.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}, {"caption": "Ov 89 · good length outside off · 135 km/h · v Right Fast · bowled", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2024/Men/Multi%20Day/5460531/B/1/5460531B108905.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}, {"caption": "Ov 30 · full on the stumps · 129 km/h · v Right Fast · bowled", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2024/Men/Multi%20Day/5460531/B/2/5460531B203004.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}, {"caption": "Ov 89 · v Right Medium · caught", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2024/Men/Multi%20Day/5460499/A/2/5460499A208903.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}]}, "false_shots": {"title": "False shots", "items": [{"caption": "Ov 45 · good length down the leg side · v Right Fast · false shot", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2025-26/Men/Multi%20Day/5461960/B/1/5461960B104501.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}, {"caption": "Ov 45 · full down the leg side · v Right Fast · false shot", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2025-26/Men/Multi%20Day/5461960/B/1/5461960B104502.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}, {"caption": "Ov 45 · good length down the leg side · v Right Fast · false shot", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2025-26/Men/Multi%20Day/5461960/B/1/5461960B104503.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}, {"caption": "Ov 33 · good length down the leg side · v Right Fast · false shot", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2025-26/Men/Multi%20Day/5461960/B/2/5461960B203305.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}, {"caption": "Ov 33 · good length down the leg side · v Right Fast · false shot", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2025-26/Men/Multi%20Day/5461960/B/2/5461960B203306.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}, {"caption": "Ov 35 · good length down the leg side · v Right Fast · false shot", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2025-26/Men/Multi%20Day/5461960/B/2/5461960B203501.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}, {"caption": "Ov 35 · good length down the leg side · v Right Fast · false shot", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2025-26/Men/Multi%20Day/5461960/B/2/5461960B203502.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}, {"caption": "Ov 35 · good length down the leg side · v Right Fast · false shot", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2025-26/Men/Multi%20Day/5461960/B/2/5461960B203503.MP4?st=2026-07-21T21%3A54%3A53Z&se=2026-07-28T09%3A59%3A53Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-07-21T21%3A54%3A53Z&ske=2026-07-28T09%3A59%3A53Z&sks=b&skv=2026-06-06&sig=XQO4Z5YCjC0cwYTBwtLpVnL/jraTGc8Z7E6S7YkoQgw%3D", "angles": null}]}};
+const keys = Object.keys(PLAYLISTS).filter(k => (PLAYLISTS[k].items||[]).length);
+let curKey = keys[0] || null, curIdx = 0, curAngle = 0;
+
+function renderTabs() {
+  const t = document.getElementById('tabs'); t.innerHTML = '';
+  keys.forEach(k => {
+    const pl = PLAYLISTS[k];
+    const el = document.createElement('div');
+    el.className = 'tab' + (k===curKey?' active':'');
+    el.innerHTML = (pl.title||k) + '<span class="n">' + (pl.items.length) + '</span>';
+    el.onclick = () => { curKey = k; renderTabs(); renderGrid(); };
+    t.appendChild(el);
+  });
+}
+function renderGrid() {
+  const g = document.getElementById('grid'); g.innerHTML = '';
+  const pl = PLAYLISTS[curKey];
+  if (!pl || !pl.items.length) { g.innerHTML = '<div class="empty">No clips.</div>'; return; }
+  pl.items.forEach((it, i) => {
+    const c = document.createElement('div'); c.className = 'card'; c.onclick = () => openModal(curKey, i);
+    c.innerHTML = '<div class="idx">'+(i+1)+' / '+pl.items.length+'</div>' +
+                  '<div class="cap">'+(it.caption||('Ball '+(i+1)))+'</div>' +
+                  '<div class="play">▶ play</div>';
+    g.appendChild(c);
+  });
+}
+function openModal(k, i) { curKey = k; curIdx = i; curAngle = 0; document.getElementById('modal').classList.add('open'); load(); }
+function closeModal() { const v=document.getElementById('vid'); v.pause(); v.removeAttribute('src'); v.load();
+  document.getElementById('modal').classList.remove('open'); }
+function step(d) { const n = PLAYLISTS[curKey].items.length; curIdx = Math.min(n-1, Math.max(0, curIdx+d)); curAngle=0; load(); }
+function load() {
+  const pl = PLAYLISTS[curKey], it = pl.items[curIdx], n = pl.items.length;
+  const angles = (it.angles && it.angles.length) ? it.angles : [{label:'Broadcast', url: it.url}];
+  const v = document.getElementById('vid');
+  v.src = angles[Math.min(curAngle, angles.length-1)].url || '';
+  document.getElementById('mcap').textContent = it.caption || '';
+  document.getElementById('mmeta').textContent = (pl.title||curKey);
+  document.getElementById('counter').textContent = (curIdx+1) + ' / ' + n;
+  document.getElementById('prev').disabled = curIdx===0;
+  document.getElementById('next').disabled = curIdx===n-1;
+  const ab = document.getElementById('angles'); ab.innerHTML = '';
+  if (angles.length > 1) angles.forEach((a, ai) => {
+    const b = document.createElement('button'); b.className = 'angle'+(ai===curAngle?' active':''); b.textContent = a.label;
+    b.onclick = () => { curAngle = ai; load(); }; ab.appendChild(b);
+  });
+}
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('modal').classList.contains('open')) return;
+  if (e.key==='Escape') closeModal(); else if (e.key==='ArrowLeft') step(-1); else if (e.key==='ArrowRight') step(1);
+});
+renderTabs(); renderGrid();
+// deep-link: #<playlist_key> opens that playlist's first clip
+(function(){ const h=(location.hash||'').replace('#','');
+  if (h && PLAYLISTS[h] && PLAYLISTS[h].items.length) openModal(h, 0);
+  else if (h && keys.includes(h)) { curKey=h; renderTabs(); renderGrid(); } })();
+</script>
+</body></html>
