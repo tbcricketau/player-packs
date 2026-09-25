@@ -1,5 +1,21 @@
 <!doctype html><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1">
 <title>Player packs</title>
+<script>
+(function(){
+  window.__vmPending = null;
+  document.addEventListener('click', function(e){
+    if (window.__vmReady) return;                 // the real handler is live; let it work
+    var a = e.target && e.target.closest && e.target.closest('a.vlink[data-pl]');
+    if (!a) return;
+    e.preventDefault();
+    var key = a.getAttribute('data-pl'), href = a.getAttribute('href');
+    window.__vmPending = key;
+    setTimeout(function(){                        // no data block after 6s: follow the link
+      if (!window.__vmReady && window.__vmPending === key && href) location.href = href;
+    }, 6000);
+  }, true);
+})();
+</script>
 <style>
  :root{color-scheme:light}
  body{font:15px/1.5 Inter,-apple-system,Segoe UI,sans-serif;max-width:760px;margin:0 auto;padding:24px 16px 48px;color:#1a1a2e;background:#F5F7FA}

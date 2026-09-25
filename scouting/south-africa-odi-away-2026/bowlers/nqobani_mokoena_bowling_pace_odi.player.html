@@ -62,9 +62,14 @@
 </div>
 
 <script>
-const PLAYLISTS = {"wickets": {"title": "Wickets", "items": [{"caption": "Ov 35.3 · caught · Namibia 2026", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2026-27/Men/1%20Day/7390118/A/1/7390118A103503.MP4?st=2026-09-21T23%3A32%3A04Z&se=2026-09-28T11%3A37%3A04Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-09-21T23%3A32%3A04Z&ske=2026-09-28T11%3A37%3A04Z&sks=b&skv=2026-06-06&sig=wuAtLKGLOXRwz3vN13RDiuFesgOWbge2PDd6qCFoews%3D", "angles": null}]}};
-const keys = Object.keys(PLAYLISTS).filter(k => (PLAYLISTS[k].items||[]).length);
-let curKey = keys[0] || null, curIdx = 0, curAngle = 0;
+const PL_SRC = "nqobani_mokoena_bowling_pace_odi.clips.json"; let PLAYLISTS = null;
+let keys = [], curKey = null, curIdx = 0, curAngle = 0;
+// The clips are either inline (PLAYLISTS already set) or in a sidecar file fetched once.
+function plData(then) {
+  if (PLAYLISTS) { then(); return; }
+  fetch(PL_SRC).then(r => r.ok ? r.json() : {}).then(d => { PLAYLISTS = d || {}; then(); })
+               .catch(() => { PLAYLISTS = {}; then(); });
+}
 
 function renderTabs() {
   const t = document.getElementById('tabs'); t.innerHTML = '';
@@ -113,10 +118,15 @@ document.addEventListener('keydown', e => {
   if (!document.getElementById('modal').classList.contains('open')) return;
   if (e.key==='Escape') closeModal(); else if (e.key==='ArrowLeft') step(-1); else if (e.key==='ArrowRight') step(1);
 });
-renderTabs(); renderGrid();
-// deep-link: #<playlist_key> opens that playlist's first clip
-(function(){ const h=(location.hash||'').replace('#','');
+function start() {
+  keys = Object.keys(PLAYLISTS).filter(k => (PLAYLISTS[k].items||[]).length);
+  curKey = keys[0] || null;
+  renderTabs(); renderGrid();
+  // deep-link: #<playlist_key> opens that playlist's first clip
+  const h = (location.hash||'').replace('#','');
   if (h && PLAYLISTS[h] && PLAYLISTS[h].items.length) openModal(h, 0);
-  else if (h && keys.includes(h)) { curKey=h; renderTabs(); renderGrid(); } })();
+  else if (h && keys.includes(h)) { curKey=h; renderTabs(); renderGrid(); }
+}
+plData(start);
 </script>
 </body></html>

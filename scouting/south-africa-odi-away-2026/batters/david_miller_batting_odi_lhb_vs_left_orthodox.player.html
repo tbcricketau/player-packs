@@ -62,9 +62,14 @@
 </div>
 
 <script>
-const PLAYLISTS = {"danger": {"title": "Danger ball", "items": [{"caption": "Ov 37 · full on the stumps · 99 km/h · v Left Orthodox", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2025/Men/1%20Day/5460717/A/1/5460717A103702.MP4?st=2026-09-22T02%3A17%3A23Z&se=2026-09-22T08%3A22%3A23Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-09-22T02%3A17%3A23Z&ske=2026-09-22T08%3A22%3A23Z&sks=b&skv=2026-06-06&sig=Xw8%2BOU2UEKxWXNDsG5TqJjX61igxNGaz04QIMd9WIqE%3D", "angles": null}, {"caption": "Ov 17 · full on the stumps · 99 km/h · v Left Orthodox", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2023/Men/1%20Day/5460353/B/1/5460353B101702.MP4?st=2026-09-22T02%3A17%3A23Z&se=2026-09-22T08%3A22%3A23Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-09-22T02%3A17%3A23Z&ske=2026-09-22T08%3A22%3A23Z&sks=b&skv=2026-06-06&sig=Xw8%2BOU2UEKxWXNDsG5TqJjX61igxNGaz04QIMd9WIqE%3D", "angles": null}]}, "dismissals": {"title": "Dismissals", "items": [{"caption": "Ov 17 · good length on the stumps · 99 km/h · v Left Orthodox · bowled", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2023/Men/1%20Day/5460353/B/1/5460353B101703.MP4?st=2026-09-22T02%3A17%3A23Z&se=2026-09-22T08%3A22%3A23Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-09-22T02%3A17%3A23Z&ske=2026-09-22T08%3A22%3A23Z&sks=b&skv=2026-06-06&sig=Xw8%2BOU2UEKxWXNDsG5TqJjX61igxNGaz04QIMd9WIqE%3D", "angles": null}]}, "false_shots": {"title": "False shots", "items": [{"caption": "Ov 31 · full outside off · 96 km/h · v Left Orthodox · false shot", "url": "https://auscricketfairplayase.blob.core.windows.net/fairplay/2025/Men/1%20Day/5460717/A/1/5460717A103102.MP4?st=2026-09-22T02%3A17%3A23Z&se=2026-09-22T08%3A22%3A23Z&sp=r&sv=2026-06-06&sr=c&skoid=d6100e58-aa81-44d2-9b26-5978730b7fca&sktid=387455cc-c3fd-431b-a5a4-e56147c2e9db&skt=2026-09-22T02%3A17%3A23Z&ske=2026-09-22T08%3A22%3A23Z&sks=b&skv=2026-06-06&sig=Xw8%2BOU2UEKxWXNDsG5TqJjX61igxNGaz04QIMd9WIqE%3D", "angles": null}]}};
-const keys = Object.keys(PLAYLISTS).filter(k => (PLAYLISTS[k].items||[]).length);
-let curKey = keys[0] || null, curIdx = 0, curAngle = 0;
+const PL_SRC = "david_miller_batting_odi_lhb_vs_left_orthodox.clips.json"; let PLAYLISTS = null;
+let keys = [], curKey = null, curIdx = 0, curAngle = 0;
+// The clips are either inline (PLAYLISTS already set) or in a sidecar file fetched once.
+function plData(then) {
+  if (PLAYLISTS) { then(); return; }
+  fetch(PL_SRC).then(r => r.ok ? r.json() : {}).then(d => { PLAYLISTS = d || {}; then(); })
+               .catch(() => { PLAYLISTS = {}; then(); });
+}
 
 function renderTabs() {
   const t = document.getElementById('tabs'); t.innerHTML = '';
@@ -113,10 +118,15 @@ document.addEventListener('keydown', e => {
   if (!document.getElementById('modal').classList.contains('open')) return;
   if (e.key==='Escape') closeModal(); else if (e.key==='ArrowLeft') step(-1); else if (e.key==='ArrowRight') step(1);
 });
-renderTabs(); renderGrid();
-// deep-link: #<playlist_key> opens that playlist's first clip
-(function(){ const h=(location.hash||'').replace('#','');
+function start() {
+  keys = Object.keys(PLAYLISTS).filter(k => (PLAYLISTS[k].items||[]).length);
+  curKey = keys[0] || null;
+  renderTabs(); renderGrid();
+  // deep-link: #<playlist_key> opens that playlist's first clip
+  const h = (location.hash||'').replace('#','');
   if (h && PLAYLISTS[h] && PLAYLISTS[h].items.length) openModal(h, 0);
-  else if (h && keys.includes(h)) { curKey=h; renderTabs(); renderGrid(); } })();
+  else if (h && keys.includes(h)) { curKey=h; renderTabs(); renderGrid(); }
+}
+plData(start);
 </script>
 </body></html>
